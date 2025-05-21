@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CleanSweep - Indore 3D Report Map</title>
+
+    <!-- CesiumJS CDN -->
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.118/Build/Cesium/Cesium.js"></script>
+    <link
+      href="https://cesium.com/downloads/cesiumjs/releases/1.118/Build/Cesium/Widgets/widgets.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      html,
+      body,
+      #cesiumContainer {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        font-family: "Segoe UI", sans-serif;
+        background-color: #000;
+      }
+
+      #reportsPanel {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        width: 300px;
+        max-height: 90%;
+        background: rgba(30, 30, 30, 0.9);
+        color: white;
+        padding: 16px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        z-index: 999;
+        overflow-y: auto;
+        backdrop-filter: blur(6px);
+      }
+
+      #reportsPanel h2 {
+        margin: 0 0 12px;
+        font-size: 1.3rem;
+        border-bottom: 1px solid #555;
+        padding-bottom: 6px;
+      }
+
+      #reportsList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      #reportsList li {
+        padding: 10px;
+        margin-bottom: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        font-size: 0.92rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-left: 4px solid transparent;
+      }
+
+      #reportsList li:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .status-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        border: 1px solid #ccc;
+      }
+
+      .cesium-widget-credits {
+        display: none !important;
+      }
+
+      .cesium-infoBox {
+        max-height: 400px;
+      }
+
+      .cesium-infoBox-title {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="cesiumContainer"></div>
+
+    <div id="reportsPanel">
+      <h2>Cleanup Reports</h2>
+      <ul id="reportsList"></ul>
+    </div>
+
+    <script>
+      // Set your Cesium token here
+      Cesium.Ion.defaultAccessToken =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3MDg0ZWYzMS02OGRjLTRkMzItYjNmMi1jNGFlMDk4ZTFlMzQiLCJpZCI6MjkxMjY1LCJpYXQiOjE3NDM5MjMwNDJ9.KgMK63txKV7HBxmYYVlxQEnqFqaSWSA6R14_v-_3mNc";
+
+      const viewer = new Cesium.Viewer("cesiumContainer", {
+        animation: false,
+        timeline: false,
+        geocoder: false,
+        homeButton: false,
+        sceneModePicker: false,
+        baseLayerPicker: false,
+        navigationHelpButton: false,
+        infoBox: true,
+        fullscreenButton: true,
+      });
+
+      viewer.scene.globe.enableLighting = true;
+      viewer.scene.fog.enabled = true;
+      viewer.scene.globe.depthTestAgainstTerrain = true;
+
+      viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(75.8577, 22.7177, 25000),
+        orientation: {
+          heading: 0.0,
+          pitch: Cesium.Math.toRadians(-60.0),
+          roll: 0.0,
+        },
+        duration: 3,
+      });
+
+      const cleanupReports = [
+        {
+          id: "rep001",
+          lat: 22.7196,
+          lon: 75.8577,
+          status: "Reported",
+          description: "Large garbage pile near Rajwada back gate.",
+        },
+        {
+          id: "rep002",
+          lat: 22.7298,
+          lon: 75.8797,
+          status: "In Progress",
+          description: "Overflowing bin at Chappan Dukan entrance.",
+        },
+        {
+          id: "rep003",
+          lat: 22.6984,
+          lon: 75.8481,
+          status: "Cleaned",
+          description: "Litter scattered near Lal Bagh Palace main road.",
+        },
+        {
+          id: "rep004",
+          lat: 22.7518,
+          lon: 75.8347,
+          status: "Reported",
+          description:
+            "Construction debris left on the pavement near Annapurna Temple.",
+        },
+        {
+          id: "rep005",
+          lat: 22.7146,
+          lon: 75.8543,
+          status: "Reported",
+          description: "Dirty area behind Kanch Mandir.",
+        },
+        {
+          id: "rep006",
+          lat: 22.7439,
+          lon: 75.9044,
+          status: "Cleaned",
+          description: "Area around Khajrana Ganesh Mandir entrance cleared.",
+        },
+        {
+          id: "rep007",
+          lat: 22.716,
+          lon: 75.8565,
+          status: "In Progress",
+          description: "Food waste accumulation in Sarafa Bazaar lane.",
+        },
+        {
+          id: "rep008",
+          lat: 22.82114417476062,
+          lon: 75.94310021260185,
+          status: "In Progress",
+          description: "Food waste accumulation in Acropolis Indore.",
+        },
+      ];
+
+      const reportsListElement = document.getElementById("reportsList");
+
+      cleanupReports.forEach((report) => {
+        let markerColor, statusColor;
+
+        switch (report.status) {
+          case "Reported":
+            markerColor = Cesium.Color.RED;
+            statusColor = "red";
+            break;
+          case "In Progress":
+            markerColor = Cesium.Color.YELLOW;
+            statusColor = "yellow";
+            break;
+          case "Cleaned":
+            markerColor = Cesium.Color.LIME;
+            statusColor = "lime";
+            break;
+          default:
+            markerColor = Cesium.Color.GRAY;
+            statusColor = "gray";
+        }
+
+        // Add marker on map
+        viewer.entities.add({
+          id: report.id,
+          position: Cesium.Cartesian3.fromDegrees(report.lon, report.lat),
+          name: `Status: ${report.status}`,
+          description: `<b>Location:</b> (${report.lat.toFixed(
+            4
+          )}, ${report.lon.toFixed(4)})<br/><b>Status:</b> ${
+            report.status
+          }<br/><b>Description:</b> ${report.description}`,
+          point: {
+            pixelSize: 24,
+            color: markerColor,
+            outlineColor: Cesium.Color.BLACK,
+            outlineWidth: 2,
+          },
+        });
+
+        // Add to side panel
+        const li = document.createElement("li");
+        li.setAttribute("data-id", report.id);
+        li.innerHTML = `
+          <span class="status-indicator" style="background-color: ${statusColor};"></span>
+          ${report.description}
+        `;
+        reportsListElement.appendChild(li);
+      });
+
+      reportsListElement.addEventListener("click", function (e) {
+        const target = e.target.closest("li");
+        if (target) {
+          const entityId = target.getAttribute("data-id");
+          const entity = viewer.entities.getById(entityId);
+          if (entity) {
+            viewer.flyTo(entity, { duration: 2.0 });
+            viewer.selectedEntity = entity;
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

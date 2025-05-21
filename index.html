@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cleansweep - Indore 3D Report Map + List (v5 - Points)</title>
+    <!-- Include CesiumJS library and styles from CDN -->
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.118/Build/Cesium/Cesium.js"></script>
+    <link
+      href="https://cesium.com/downloads/cesiumjs/releases/1.118/Build/Cesium/Widgets/widgets.css"
+      rel="stylesheet"
+    />
+    <style>
+      html,
+      body,
+      #cesiumContainer {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        font-family: sans-serif;
+      }
+      #reportsPanel {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 280px;
+        max-height: 90%;
+        background: rgba(40, 40, 40, 0.85);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        z-index: 10;
+        overflow-y: auto;
+      }
+      #reportsPanel h2 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 1.2em;
+        border-bottom: 1px solid #555;
+        padding-bottom: 5px;
+      }
+      #reportsList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      #reportsList li {
+        padding: 8px 5px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+        font-size: 0.9em;
+        border-bottom: 1px solid #444;
+      }
+      #reportsList li:last-child {
+        border-bottom: none;
+      }
+      #reportsList li:hover {
+        background-color: rgba(80, 80, 80, 0.9);
+      }
+      .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+        vertical-align: middle;
+        border: 1px solid #ccc;
+      }
+      .cesium-widget-credits {
+        display: none !important;
+      }
+      .cesium-infoBox {
+        max-height: 400px;
+      }
+      .cesium-infoBox-title {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="reportsPanel">
+      <h2>Cleanup Reports</h2>
+      <ul id="reportsList"></ul>
+    </div>
+
+    <div id="cesiumContainer"></div>
+
+    <script>
+      // --- IMPORTANT: PASTE YOUR CESIUM ION TOKEN HERE ---
+      Cesium.Ion.defaultAccessToken =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3MDg0ZWYzMS02OGRjLTRkMzItYjNmMi1jNGFlMDk4ZTFlMzQiLCJpZCI6MjkxMjY1LCJpYXQiOjE3NDM5MjMwNDJ9.KgMK63txKV7HBxmYYVlxQEnqFqaSWSA6R14_v-_3mNc";
+
+      try {
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+          animation: false,
+          timeline: false,
+          geocoder: false,
+          homeButton: false,
+          sceneModePicker: false,
+          baseLayerPicker: false,
+          navigationHelpButton: false,
+          infoBox: true,
+          fullscreenButton: true,
+        });
+
+        console.log("Cesium Viewer initialized successfully.");
+
+        viewer.scene.globe.enableLighting = true;
+        viewer.scene.fog.enabled = true;
+        viewer.scene.globe.depthTestAgainstTerrain = true;
+
+        // --- Initial Camera View (Focus on Indore) ---
+        viewer.camera.flyTo({
+          destination: Cesium.Cartesian3.fromDegrees(75.8577, 22.7177, 25000),
+          orientation: {
+            heading: 0.0,
+            pitch: Cesium.Math.toRadians(-60.0),
+            roll: 0.0,
+          },
+          duration: 3,
+        });
+
+        // --- SIMULATED CLEANUP REPORT DATA ---
+        const cleanupReports = [
+          {
+            id: "rep001",
+            lat: 22.7196,
+            lon: 75.8577,
+            status: "Reported",
+            description: "Large garbage pile near Rajwada back gate.",
+          },
+          {
+            id: "rep002",
+            lat: 22.7298,
+            lon: 75.8797,
+            status: "In Progress",
+            description: "Overflowing bin at Chappan Dukan entrance.",
+          },
+          {
+            id: "rep003",
+            lat: 22.6984,
+            lon: 75.8481,
+            status: "Cleaned",
+            description: "Litter scattered near Lal Bagh Palace main road.",
+          },
+          {
+            id: "rep004",
+            lat: 22.7518,
+            lon: 75.8347,
+            status: "Reported",
+            description:
+              "Construction debris left on the pavement near Annapurna Temple.",
+          },
+          {
+            id: "rep005",
+            lat: 22.7146,
+            lon: 75.8543,
+            status: "Reported",
+            description: "Dirty area behind Kanch Mandir.",
+          },
+          {
+            id: "rep006",
+            lat: 22.7439,
+            lon: 75.9044,
+            status: "Cleaned",
+            description: "Area around Khajrana Ganesh Mandir entrance cleared.",
+          },
+          {
+            id: "rep007",
+            lat: 22.716,
+            lon: 75.8565,
+            status: "In Progress",
+            description: "Food waste accumulation in Sarafa Bazaar lane.",
+          },
+          {
+            id: "rep008",
+            lat: 22.82114417476062,
+            lon: 75.94310021260185,
+            status: "In Progress",
+            description: "Food waste accumulation in Acropolis Indore.",
+          },
+        ];
+
+        const reportsListElement = document.getElementById("reportsList");
+        if (!reportsListElement)
+          throw new Error("Could not find #reportsList UL.");
+
+        console.log(`Processing ${cleanupReports.length} reports...`);
+        cleanupReports.forEach((report) => {
+          let markerColor;
+          let pointSize = 30;
+          let statusColorString;
+
+          switch (report.status) {
+            case "Reported":
+              markerColor = Cesium.Color.RED;
+              statusColorString = "red";
+              pointSize = 36;
+              break;
+            case "In Progress":
+              markerColor = Cesium.Color.YELLOW;
+              statusColorString = "yellow";
+              break;
+            case "Cleaned":
+              markerColor = Cesium.Color.LIME;
+              statusColorString = "lime";
+              break;
+            default:
+              markerColor = Cesium.Color.GRAY;
+              statusColorString = "gray";
+          }
+
+          viewer.entities.add({
+            id: report.id,
+            position: Cesium.Cartesian3.fromDegrees(report.lon, report.lat),
+            name: `Report Status: ${report.status}`,
+            description: `<b>Location:</b> (${report.lat.toFixed(
+              4
+            )}, ${report.lon.toFixed(4)})<br/><b>Status:</b> ${
+              report.status
+            }<br/><b>Details:</b> ${report.description}`,
+            point: {
+              pixelSize: pointSize,
+              color: markerColor,
+              outlineColor: Cesium.Color.BLACK,
+              outlineWidth: 2,
+            },
+          });
+
+          const listItem = document.createElement("li");
+          listItem.setAttribute("data-id", report.id);
+          listItem.innerHTML = `
+                  <span class="status-indicator" style="background-color: ${statusColorString};"></span>
+                  ${report.description} (${report.status})
+              `;
+          reportsListElement.appendChild(listItem);
+        });
+        console.log("Finished processing reports.");
+
+        reportsListElement.addEventListener("click", function (event) {
+          const targetLi = event.target.closest("li");
+          if (targetLi) {
+            const entityId = targetLi.getAttribute("data-id");
+
+            if (entityId) {
+              const targetEntity = viewer.entities.getById(entityId);
+
+              if (targetEntity) {
+                console.log(`List item clicked, flying to entity: ${entityId}`);
+                viewer
+                  .flyTo(targetEntity, {
+                    duration: 2.0,
+                  })
+                  .then(() => {
+                    viewer.selectedEntity = targetEntity;
+                  });
+              } else {
+                console.error("Could not find entity with ID:", entityId);
+              }
+            } else {
+              console.error(
+                "Could not find entity ID on clicked list item:",
+                targetLi.textContent
+              );
+            }
+          }
+        });
+      } catch (error) {
+        console.error(
+          "Error during Cesium initialization or processing:",
+          error
+        );
+        document.body.innerHTML = `<div style="padding: 20px; text-align: center; color: red; font-family: sans-serif;"><h2>Error Loading 3D Map</h2><p>Could not initialize the Cesium 3D viewer or process data. Check console (F12).</p><p>Error details: ${
+          error.message || error
+        }</p></div>`;
+      }
+    </script>
+  </body>
+</html>

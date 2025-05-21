@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CleanSweep Admin Dashboard</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+        height: 100vh;
+        color: #333;
+      }
+
+      .sidebar {
+        width: 250px;
+        background-color: #e8f5e9;
+        padding: 20px;
+        border-right: 2px solid #c8e6c9;
+      }
+
+      .sidebar img {
+        width: 120px;
+        margin: 0 auto 20px;
+        display: block;
+      }
+
+      .sidebar h2 {
+        color: #2e7d32;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .sidebar a {
+        display: block;
+        color: #2e7d32;
+        text-decoration: none;
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+      }
+
+      .sidebar a:hover {
+        background-color: #c8e6c9;
+      }
+
+      .main {
+        flex: 1;
+        padding: 20px;
+        background-color: #f9fdf9;
+        overflow-y: auto;
+      }
+
+      .header {
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #2e7d32;
+      }
+
+      .complaint-card {
+        background-color: white;
+        border-left: 5px solid #66bb6a;
+        margin-bottom: 15px;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .complaint-card.pending {
+        border-left-color: #ffca28;
+      }
+
+      .complaint-card.resolved {
+        border-left-color: #66bb6a;
+      }
+
+      .complaint-card h4 {
+        margin: 0 0 10px;
+      }
+
+      .complaint-card small {
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
+      }
+
+      .view-photo {
+        display: inline-block;
+        margin-top: 10px;
+        color: #1b5e20;
+        font-weight: bold;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <img src="Logo.png" alt="CleanSweep Logo" />
+      <h2>CleanSweep</h2>
+      <a href="#">Check All Complaints</a>
+      <a href="#">View Map</a>
+      <a href="#">View Reports</a>
+      <a href="#">Generate Complaint Priority</a>
+    </div>
+
+    <div class="main">
+      <div class="header">All Complaints</div>
+
+      <div class="complaint-card pending">
+        <h4>Plastic Waste</h4>
+        <small>Status: Pending</small>
+        <small>Category: Sanitation</small>
+        <small>Date: 29/4/2025</small>
+        <small>Description: sukha kachra</small>
+        <small>By: Yash Patel</small>
+        <div class="view-photo">View Photo</div>
+      </div>
+
+      <div class="complaint-card resolved">
+        <h4>Work now</h4>
+        <small>Status: Resolved</small>
+        <small>Category: Sanitation</small>
+        <small>Date: 7/4/2025</small>
+        <small>Description: NA</small>
+        <small>By: Sachin -</small>
+        <div class="view-photo">View Photo</div>
+      </div>
+
+      <div class="complaint-card resolved">
+        <h4>EFWEFW</h4>
+        <small>Status: Resolved</small>
+        <small>Category: WET waste</small>
+        <small>Date: 6/4/2025</small>
+        <small>Description: QWDQWD</small>
+        <small>By: YASH -</small>
+        <div class="view-photo">View Photo</div>
+      </div>
+
+      <div class="complaint-card pending">
+        <h4>New Comp</h4>
+        <small>Status: Pending</small>
+        <small>Category: Sanitation</small>
+        <small>Date: 6/4/2025</small>
+        <small>Description: qwfqwf</small>
+        <div class="view-photo">View Photo</div>
+      </div>
+
+      <div class="complaint-card pending">
+        <h4>KEFWMWE</h4>
+        <small>Status: Pending</small>
+        <small>Category: Safety</small>
+        <small>Date: 4/4/2025</small>
+        <small>Description: SDVSDV</small>
+        <div class="view-photo">View Photo</div>
+      </div>
+
+      <div class="complaint-card pending">
+        <h4>DSFSF</h4>
+        <small>Status: Pending</small>
+        <small>Category: Infrastructure</small>
+        <small>Date: 4/4/2025</small>
+        <small>Description: SDFSDF</small>
+        <div class="view-photo">View Photo</div>
+      </div>
+
+      <div class="complaint-card pending">
+        <h4>Kacharavuatho</h4>
+        <small>Status: Pending</small>
+        <small>Category: Other</small>
+        <small>Date: 2/4/2025</small>
+        <small>Description: fewfwef</small>
+        <div class="view-photo">View Photo</div>
+      </div>
+
+      <div class="complaint-card pending">
+        <h4>Tata</h4>
+        <small>Status: Pending</small>
+        <small>Category: Safety</small>
+        <small>Date: 2/4/2025</small>
+        <small>Description: Birla</small>
+        <div class="view-photo">View Photo</div>
+      </div>
+
+      <div class="complaint-card pending">
+        <h4>Hospital</h4>
+        <small>Status: Pending</small>
+        <small>Category: Safety</small>
+        <small>Date: 2/4/2025</small>
+        <small>Description: dewdewv</small>
+        <div class="view-photo">View Photo</div>
+      </div>
+
+      <div class="complaint-card pending">
+        <h4>College Work</h4>
+        <small>Status: Pending</small>
+        <small>Category: Sanitation</small>
+        <small>Date: 2/4/2025</small>
+        <small>Description: qwdqwd</small>
+        <div class="view-photo">View Photo</div>
+      </div>
+
+      <div class="complaint-card pending">
+        <h4>Ergerg</h4>
+        <small>Status: Pending</small>
+        <small>Category: Infrastructure</small>
+        <small>Date: 1/4/2025</small>
+        <small>Description: ergerge</small>
+        <div class="view-photo">View Photo</div>
+      </div>
+
+      <div class="complaint-card pending">
+        <h4>Vijaynagar</h4>
+        <small>Status: Pending</small>
+        <small>Category: Safety</small>
+        <small>Date: 1/4/2025</small>
+        <small>Description: gregerg</small>
+        <div class="view-photo">View Photo</div>
+      </div>
+
+      <div class="complaint-card pending">
+        <h4>Hello</h4>
+        <small>Status: Pending</small>
+        <small>Category: Sanitation</small>
+        <small>Date: 1/4/2025</small>
+        <small>Description: dqwefew</small>
+        <div class="view-photo">View Photo</div>
+      </div>
+
+      <div class="complaint-card pending">
+        <h4>Efew</h4>
+        <small>Status: Pending</small>
+        <small>Category: Infrastructure</small>
+        <small>Date: 1/4/2025</small>
+        <small>Description: 4t4ttt</small>
+        <div class="view-photo">View Photo</div>
+      </div>
+    </div>
+  </body>
+</html>
